@@ -13,6 +13,8 @@ type Client struct {
 
 	// send is a channel for messages.
 	send chan Message
+
+	user User
 }
 
 func (c *Client) Read() {
@@ -27,6 +29,7 @@ func (c *Client) Read() {
 		if err = msg.Unmarshal(m); err != nil {
 			return
 		}
+		msg.User = c.user
 
 		c.channel.Consume(msg)
 	}

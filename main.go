@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/websocket"
+	"github.com/tjmcginnis/namer"
 )
 
 var (
@@ -50,10 +51,12 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	namer := namer.New()
 	client := &Client{
 		channel: c.channel,
 		conn:    conn,
 		send:    make(chan Message),
+		user:    NewUser(namer.Name()),
 	}
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
