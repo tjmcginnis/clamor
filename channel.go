@@ -3,7 +3,7 @@ package main
 // Channel represents a text channel for chat.
 type Channel struct {
 	// inbound holds incoming messages.
-	inbound chan []byte
+	inbound chan Message
 
 	// enter is for clients entering the room.
 	enter chan *Client
@@ -18,7 +18,7 @@ type Channel struct {
 // NewChannel makes a new channel
 func NewChannel() *Channel {
 	return &Channel{
-		inbound: make(chan []byte),
+		inbound: make(chan Message),
 		enter:   make(chan *Client),
 		exit:    make(chan *Client),
 		clients: make(map[*Client]bool),
@@ -49,6 +49,6 @@ func (c *Channel) Exit(client *Client) {
 	c.exit <- client
 }
 
-func (c *Channel) Consume(msg []byte) {
-	c.inbound <- msg
+func (c *Channel) Consume(message Message) {
+	c.inbound <- message
 }

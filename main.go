@@ -53,7 +53,7 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client := &Client{
 		channel: c.channel,
 		conn:    conn,
-		send:    make(chan []byte, 256),
+		send:    make(chan Message),
 	}
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
