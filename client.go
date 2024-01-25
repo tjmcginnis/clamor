@@ -14,7 +14,7 @@ type Client struct {
 	// send is a channel for messages.
 	send chan Message
 
-	user User
+	user *User
 }
 
 func (c *Client) Read() {

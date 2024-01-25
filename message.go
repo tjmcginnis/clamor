@@ -9,7 +9,7 @@ import (
 
 // Message represents a chat message.
 type Message struct {
-	User User
+	User *User
 	Body string
 }
 
