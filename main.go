@@ -30,7 +30,10 @@ func main() {
 		homeTempl.Execute(w, r)
 	})
 
-	http.Handle("/channel", &chatHandler{channel: c})
+	http.Handle("/channel", &chatHandler{
+		channel: c,
+		namer:   namer.New(),
+	})
 
 	go c.Run()
 
@@ -42,6 +45,7 @@ func main() {
 
 type chatHandler struct {
 	channel *Channel
+	namer   namer.Namer
 }
 
 func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -51,12 +55,12 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	namer := namer.New()
+	name := c.namer.Name()
 	client := &Client{
 		channel: c.channel,
 		conn:    conn,
 		send:    make(chan Message),
-		user:    NewUser(namer.Name()),
+		user:    NewUser(name),
 	}
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
