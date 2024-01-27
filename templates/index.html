@@ -14,7 +14,7 @@
 
 <body>
     <div hx-ext="ws" ws-connect="ws://{{.Host}}/channel">
-        <form id="form" class="mb-2 md:w-1/4 w-full" ws-send>
+        <form id="form" class="mb-2 md:w-1/4 w-full" hx-on::ws-after-send="this.reset()" ws-send>
             <textarea name="body" placeholder="Say something..." class="w-full"></textarea>
             <input type="submit" value="Send" class="bg-blue-500 block p-1 rounded text-white w-full" />
         </form>
