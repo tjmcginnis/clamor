@@ -79,7 +79,7 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
-	go client.Write()
-	go client.UpdateCount()
-	client.Read()
+	go client.ReceiveMessages()
+	go client.UpdateCounter()
+	client.SendMessage()
 }

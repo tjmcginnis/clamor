@@ -20,7 +20,7 @@ type Client struct {
 	user *User
 }
 
-func (c *Client) Read() {
+func (c *Client) SendMessage() {
 	defer c.conn.Close()
 	for {
 		_, m, err := c.conn.ReadMessage()
@@ -38,7 +38,7 @@ func (c *Client) Read() {
 	}
 }
 
-func (c *Client) Write() {
+func (c *Client) ReceiveMessages() {
 	defer c.conn.Close()
 	for msg := range c.send {
 		err := c.conn.WriteMessage(websocket.TextMessage, msg.Bytes())
@@ -48,7 +48,7 @@ func (c *Client) Write() {
 	}
 }
 
-func (c *Client) UpdateCount() {
+func (c *Client) UpdateCounter() {
 	defer c.conn.Close()
 	for counter := range c.counter {
 		err := c.conn.WriteMessage(websocket.TextMessage, counter.Bytes())
