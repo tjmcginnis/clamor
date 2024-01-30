@@ -30,9 +30,15 @@ func (c *Channel) Run() {
 		select {
 		case client := <-c.enter:
 			c.clients[client] = true
+			for client := range c.clients {
+				client.counter <- c.Size()
+			}
 		case client := <-c.exit:
 			delete(c.clients, client)
 			close(client.send)
+			for client := range c.clients {
+				client.counter <- c.Size()
+			}
 		case msg := <-c.inbound:
 			for client := range c.clients {
 				client.send <- msg
@@ -51,4 +57,8 @@ func (c *Channel) Exit(client *Client) {
 
 func (c *Channel) Consume(message Message) {
 	c.inbound <- message
+}
+
+func (c *Channel) Size() UserCounter {
+	return UserCounter(len(c.clients))
 }

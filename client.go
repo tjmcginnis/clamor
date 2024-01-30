@@ -14,6 +14,9 @@ type Client struct {
 	// send is a channel for messages.
 	send chan Message
 
+	// counter tracks the number of users in the current channel.
+	counter chan UserCounter
+
 	user *User
 }
 
@@ -39,6 +42,16 @@ func (c *Client) Write() {
 	defer c.conn.Close()
 	for msg := range c.send {
 		err := c.conn.WriteMessage(websocket.TextMessage, msg.Bytes())
+		if err != nil {
+			return
+		}
+	}
+}
+
+func (c *Client) UpdateCount() {
+	defer c.conn.Close()
+	for counter := range c.counter {
+		err := c.conn.WriteMessage(websocket.TextMessage, counter.Bytes())
 		if err != nil {
 			return
 		}

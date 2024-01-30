@@ -12,9 +12,12 @@ import (
 )
 
 var (
-	addr         = flag.String("addr", ":8080", "The address of the server.")
-	homeTemplate = filepath.Join("templates", "index.html")
-	upgrader     = &websocket.Upgrader{
+	addr          = flag.String("addr", ":8080", "The address of the server.")
+	templateFiles = []string{
+		filepath.Join("templates", "index.html"),
+		filepath.Join("templates", "user_counter.html"),
+	}
+	upgrader = &websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
@@ -25,9 +28,20 @@ func main() {
 
 	c := NewChannel()
 
-	homeTempl := template.Must(template.ParseFiles(homeTemplate))
+	templates, err := template.ParseFiles(templateFiles...)
+	if err != nil {
+		log.Fatal("ParseFiles: ", err)
+	}
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		homeTempl.Execute(w, r)
+		data := struct {
+			Host    string
+			Counter UserCounter
+		}{
+			Host:    r.Host,
+			Counter: c.Size().Increment(),
+		}
+		templates.ExecuteTemplate(w, "index", &data)
 	})
 
 	http.Handle("/channel", &chatHandler{
@@ -60,10 +74,12 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		channel: c.channel,
 		conn:    conn,
 		send:    make(chan Message),
+		counter: make(chan UserCounter),
 		user:    NewUser(name),
 	}
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
 	go client.Write()
+	go client.UpdateCount()
 	client.Read()
 }

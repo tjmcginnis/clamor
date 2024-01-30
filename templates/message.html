@@ -1,3 +1,5 @@
+{{define "message"}}
 <div hx-swap-oob="beforeend:#messages">
     <li class="text-{{.User.Color}}-800">{{.User.Name}}: {{.Body}}</li>
 </div>
+{{end}}

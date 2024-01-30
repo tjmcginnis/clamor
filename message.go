@@ -22,6 +22,6 @@ func (m *Message) Unmarshal(b []byte) error {
 func (m *Message) Bytes() []byte {
 	templ := template.Must(template.ParseFiles(messageTemplate))
 	buffer := new(bytes.Buffer)
-	templ.Execute(buffer, m)
+	templ.ExecuteTemplate(buffer, "message", m)
 	return buffer.Bytes()
 }
