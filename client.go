@@ -20,6 +20,16 @@ type Client struct {
 	user *User
 }
 
+func NewClient(channel *Channel, conn *websocket.Conn, user *User) *Client {
+	return &Client{
+		channel: channel,
+		conn:    conn,
+		send:    make(chan Message),
+		counter: make(chan UserCounter),
+		user:    user,
+	}
+}
+
 func (c *Client) SendMessage() {
 	defer c.conn.Close()
 	for {

@@ -70,16 +70,12 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := c.namer.Name()
-	client := &Client{
-		channel: c.channel,
-		conn:    conn,
-		send:    make(chan Message),
-		counter: make(chan UserCounter),
-		user:    NewUser(name),
-	}
+	client := NewClient(c.channel, conn, NewUser(name))
+
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()
 	go client.ReceiveMessages()
 	go client.UpdateCounter()
+
 	client.SendMessage()
 }
