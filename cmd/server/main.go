@@ -9,6 +9,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/tjmcginnis/namer"
+
+	"github.com/tjmcginnis/clamor"
 )
 
 var (
@@ -26,7 +28,7 @@ var (
 func main() {
 	flag.Parse()
 
-	c := NewChannel()
+	c := clamor.NewChannel()
 
 	templates, err := template.ParseFiles(templateFiles...)
 	if err != nil {
@@ -36,7 +38,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
 			Host    string
-			Counter UserCounter
+			Counter clamor.UserCounter
 		}{
 			Host:    r.Host,
 			Counter: c.Size().Increment(),
@@ -58,7 +60,7 @@ func main() {
 }
 
 type chatHandler struct {
-	channel *Channel
+	channel *clamor.Channel
 	namer   namer.Namer
 }
 
@@ -70,7 +72,7 @@ func (c *chatHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	name := c.namer.Name()
-	client := NewClient(c.channel, conn, NewUser(name))
+	client := clamor.NewClient(c.channel, conn, clamor.NewUser(name))
 
 	c.channel.Enter(client)
 	defer func() { c.channel.Exit(client) }()

@@ -1,4 +1,4 @@
-package main
+package clamor
 
 import "math/rand"
 

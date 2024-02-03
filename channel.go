@@ -1,4 +1,4 @@
-package main
+package clamor
 
 // Channel represents a text channel for chat.
 type Channel struct {
