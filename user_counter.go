@@ -10,6 +10,10 @@ type UserCounter int
 
 var userCounterTemplate = filepath.Join("templates", "user_counter.html")
 
+func NewUserCounter() UserCounter {
+	return UserCounter(0)
+}
+
 func (uc UserCounter) Bytes() []byte {
 	templ := template.Must(template.ParseFiles(userCounterTemplate))
 	buffer := new(bytes.Buffer)
